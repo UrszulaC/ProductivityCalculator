@@ -18,3 +18,8 @@ class TestProjectOperations(unittest.TestCase):
         # Clean up the test table after each test
         self.drop_test_table()
         self.connection.close()
+
+
+
+if __name__ == '__main__':
+    unittest.main()
