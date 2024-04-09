@@ -1,6 +1,6 @@
 import unittest
 import mysql.connector
-from config import *
+from app import *
 
 class TestProjectOperations(unittest.TestCase):
 
@@ -59,19 +59,19 @@ class TestProjectOperations(unittest.TestCase):
         cursor.execute("DROP TABLE IF EXISTS projects_test")
         cursor.close()
 
-    def create_test_table(self):
+    def test_create_table_projects(self):
+        create_table_projects(self.connection)
         cursor = self.connection.cursor()
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS projects_test (
-                project_id INT PRIMARY KEY,
-                project_name VARCHAR(255),
-                project_owner VARCHAR(255),
-                roi INT,
-                stage VARCHAR(255),
-                status VARCHAR(255)
-            )
-        """)
-        cursor.close()
+        cursor.execute("SHOW TABLES LIKE 'projects'")
+        result = cursor.fetchone()
+        self.assertIsNotNone(result)  # Ensuring 'projects' table exists
+
+    def test_create_record(self):
+        create_table_projects(self.connection)
+        create_record(self.connection, 1, "New Trial Request", "Urszula", 100, "Gate 2", "Active")
+        records = read_records(self.connection)
+        self.assertEqual(len(records), 2)  # Ensuring record is created
+
 
 
 
