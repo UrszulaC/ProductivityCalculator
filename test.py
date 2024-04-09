@@ -72,6 +72,14 @@ class TestProjectOperations(unittest.TestCase):
         records = read_records(self.connection)
         self.assertEqual(len(records), 2)  # Ensuring record is created
 
+    def test_update_record(self):
+        create_table_projects(self.connection)
+        create_record(self.connection, 1, "New Trial Request", "Urszula", 100, "Gate 2", "Active")
+        update_record(self.connection, 1, "New Trial Request", "Urszula", 200, "In test", "On hold - awaiting for response")
+        updated_record = read_records(self.connection)[0]
+        self.assertEqual(updated_record, (1, "New Trial Request", "Urszula", 200, "In test", "On hold - awaiting for response"))
+
+
 
 
 
