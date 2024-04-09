@@ -42,5 +42,16 @@ def update_record(connection, project_id, project_name, project_owner, roi, stag
     except mysql.connector.Error as e:
         print(f"Error updating record: {e}")
 
+def read_records(connection):
+    try:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM projects")
+        records = cursor.fetchall()
+        cursor.close()
+        return records
+    except mysql.connector.Error as e:
+        print(f"Error reading records: {e}")
+        return []  # Return an empty list if an error occurs or no records are found
+
 
 
