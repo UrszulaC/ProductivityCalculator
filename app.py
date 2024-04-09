@@ -53,5 +53,14 @@ def read_records(connection):
         print(f"Error reading records: {e}")
         return []  # Return an empty list if an error occurs or no records are found
 
-
+def delete_record(connection, project_id):
+    try:
+        cursor = connection.cursor()
+        sql = "DELETE FROM projects WHERE project_id=%s"
+        cursor.execute(sql, (project_id,))
+        connection.commit()
+        cursor.close()
+        print("Record deleted successfully")
+    except mysql.connector.Error as e:
+        print(f"Error deleting record: {e}")
 
