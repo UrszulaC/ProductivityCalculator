@@ -17,3 +17,17 @@ def create_table_projects(connection):
         print("Table 'projects' created successfully")
     except mysql.connector.Error as e:
         print(f"Error creating table: {e}")
+
+def create_record(connection, project_id, project_name, project_owner, roi, stage, status):
+    try:
+        cursor = connection.cursor()
+        sql = "INSERT INTO projects (project_id, project_name, project_owner, roi, stage, status) VALUES (%s, %s, %s, %s, %s, %s)"
+        values = (project_id, project_name, project_owner, roi, stage, status)
+        cursor.execute(sql, values)
+        connection.commit()
+        cursor.close()
+        print("Record created successfully")
+    except mysql.connector.Error as e:
+        print(f"Error creating record: {e}")
+
+
