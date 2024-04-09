@@ -19,27 +19,6 @@ class TestProjectOperations(unittest.TestCase):
         self.drop_test_table()
         self.connection.close()
 
-    import unittest
-import mysql.connector
-from app import *
-
-class TestProjectOperations(unittest.TestCase):
-
-    def setUp(self):
-        self.connection = mysql.connector.connect(
-            host=HOST,
-            user=USER,
-            password=PASSWORD,
-            database=DATABASE
-        )
-        # Creating a test table for projects
-        self.create_test_table()
-
-    def tearDown(self):
-        # Clean up the test table after each test
-        self.drop_test_table()
-        self.connection.close()
-
     def create_test_table(self):
         cursor = self.connection.cursor()
         cursor.execute("""
@@ -93,8 +72,6 @@ class TestProjectOperations(unittest.TestCase):
         records = read_records(self.connection)
         self.assertEqual(len(records), 1)  # Ensuring record is deleted
 
-
-
-
 if __name__ == '__main__':
     unittest.main()
+
