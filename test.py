@@ -86,6 +86,14 @@ class TestProjectOperations(unittest.TestCase):
         records = read_records(self.connection)
         self.assertEqual(len(records), 2)  # Ensuring correct number of records is retrieved
 
+    def test_delete_record(self):
+        create_table_projects(self.connection)
+        create_record(self.connection, 1, "New Trial Request", "Urszula", 200, "In test", "On hold - awaiting for response")
+        delete_record(self.connection, 1)
+        records = read_records(self.connection)
+        self.assertEqual(len(records), 1)  # Ensuring record is deleted
+
+
 
 
 if __name__ == '__main__':
