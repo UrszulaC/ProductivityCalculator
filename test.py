@@ -59,6 +59,20 @@ class TestProjectOperations(unittest.TestCase):
         cursor.execute("DROP TABLE IF EXISTS projects_test")
         cursor.close()
 
+    def create_test_table(self):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS projects_test (
+                project_id INT PRIMARY KEY,
+                project_name VARCHAR(255),
+                project_owner VARCHAR(255),
+                roi INT,
+                stage VARCHAR(255),
+                status VARCHAR(255)
+            )
+        """)
+        cursor.close()
+
 
 
 if __name__ == '__main__':
