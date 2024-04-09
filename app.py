@@ -30,4 +30,17 @@ def create_record(connection, project_id, project_name, project_owner, roi, stag
     except mysql.connector.Error as e:
         print(f"Error creating record: {e}")
 
+def update_record(connection, project_id, project_name, project_owner, roi, stage, status):
+    try:
+        cursor = connection.cursor()
+        sql = "UPDATE projects SET project_name=%s, project_owner=%s, roi=%s, stage=%s, status=%s WHERE project_id=%s"
+        values = (project_name, project_owner, roi, stage, status, project_id)
+        cursor.execute(sql, values)
+        connection.commit()
+        cursor.close()
+        print("Record updated successfully")
+    except mysql.connector.Error as e:
+        print(f"Error updating record: {e}")
+
+
 
