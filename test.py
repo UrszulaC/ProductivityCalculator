@@ -19,27 +19,6 @@ class TestProjectOperations(unittest.TestCase):
         self.drop_test_table()
         self.connection.close()
 
-    import unittest
-import mysql.connector
-from app import *
-
-class TestProjectOperations(unittest.TestCase):
-
-    def setUp(self):
-        self.connection = mysql.connector.connect(
-            host=HOST,
-            user=USER,
-            password=PASSWORD,
-            database=DATABASE
-        )
-        # Creating a test table for projects
-        self.create_test_table()
-
-    def tearDown(self):
-        # Clean up the test table after each test
-        self.drop_test_table()
-        self.connection.close()
-
     def create_test_table(self):
         cursor = self.connection.cursor()
         cursor.execute("""
@@ -79,9 +58,20 @@ class TestProjectOperations(unittest.TestCase):
         updated_record = read_records(self.connection)[0]
         self.assertEqual(updated_record, (1, "New Trial Request", "Urszula", 200, "In test", "On hold - awaiting for response"))
 
+    def test_read_records(self):
+        create_table_projects(self.connection)
+        create_record(self.connection, 1, "New Trial Request", "Urszula", 200, "In test", "On hold - awaiting for response")
+        create_record(self.connection, 2, "Another Project", "Another Owner", 200, "Gate 2", "Inactive")
+        records = read_records(self.connection)
+        self.assertEqual(len(records), 2)  # Ensuring correct number of records is retrieved
 
-
-
+    def test_delete_record(self):
+        create_table_projects(self.connection)
+        create_record(self.connection, 1, "New Trial Request", "Urszula", 200, "In test", "On hold - awaiting for response")
+        delete_record(self.connection, 1)
+        records = read_records(self.connection)
+        self.assertEqual(len(records), 1)  # Ensuring record is deleted
 
 if __name__ == '__main__':
     unittest.main()
+
