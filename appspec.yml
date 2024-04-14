@@ -17,7 +17,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install python3-pip
-        pip3 install -r requirements.txt
+        pip3 install mysql-connector-python
 
     - name: Setup MySQL
       run: |
@@ -36,5 +36,5 @@ jobs:
         script: |
           cd /path/to/your/project
           git pull origin main  # Change 'main' if your default branch is different
-          pip3 install -r requirements.txt
-          python3 app.py
+          pip3 install mysql-connector-python
+          python3 app.py  # Replace 'your_script_name.py' with the name of your Python script containing the provided code
