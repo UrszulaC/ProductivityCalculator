@@ -1,4 +1,4 @@
 HOST = 'localhost'
-USER='root'
+USER='ula'
 PASSWORD='Gordito10?'
-DATABASE= 'Productivity Calculator'
+DATABASE= 'ProductivityCalculator'
