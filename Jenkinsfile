@@ -38,7 +38,7 @@ pipeline {
             // Clean up the workspace
             cleanWs()
         }
-
+        }
         success {
             // Notify of success
             echo 'Build succeeded!'
