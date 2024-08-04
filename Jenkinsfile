@@ -5,7 +5,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Clone the repository from version control
-                git 'https://github.com/UrszulaC/ProductivityCalculator.git'
+                git url: 'https://github.com/UrszulaC/ProductivityCalculator.git', credentialsId: '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'
             }
         }
         
@@ -26,6 +26,24 @@ pipeline {
                 pytest --junitxml=report.xml
                 '''
             }
+        }
+    }
+
+    post {
+        always {
+            // Archive test reports
+            junit 'report.xml'
+
+            // Clean up the workspace
+            cleanWs()
+        }
+        success {
+            // Notify of success
+            echo 'Build succeeded!'
+        }
+        failure {
+            // Notify of failure
+            echo 'Build failed!'
         }
     }
 }
