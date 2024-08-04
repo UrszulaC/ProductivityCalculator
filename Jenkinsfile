@@ -28,22 +28,4 @@ pipeline {
             }
         }
     }
-
-    post {
-        always {
-            // Archive test reports
-            junit 'report.xml'
-
-            // Clean up the workspace
-            cleanWs()
-        }
-        success {
-            // Notify of success
-            echo 'Build succeeded!'
-        }
-        failure {
-            // Notify of failure
-            echo 'Build failed!'
-        }
-    }
 }
