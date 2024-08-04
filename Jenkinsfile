@@ -1,6 +1,7 @@
 pipeline {
     agent any
 
+
     stages {
         stage('Clone Repository') {
             steps {
@@ -36,6 +37,16 @@ pipeline {
 
             // Clean up the workspace
             cleanWs()
+        }
+
+        success {
+            // Notify of success
+            echo 'Build succeeded!'
+        }
+
+        failure {
+            // Notify of failure
+            echo 'Build failed!'
         }
     }
 }
