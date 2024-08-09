@@ -5,7 +5,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Clone the repository from version control
-                git url: 'git@github.com:UrszulaC/ProductivityCalculator.git', credentialsId: 'github-ssh'
+                git url: 'git@github.com:UrszulaC/ProductivityCalculator.git', credentialsId: 'Tooling'
             }
         }
         
