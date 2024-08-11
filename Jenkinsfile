@@ -2,16 +2,6 @@ pipeline {
     agent any
 
     stages {
-        stage('Install Dependencies') {
-            steps {
-                // Update package list and install dependencies using apt
-                sh '''
-                    sudo apt-get update
-                    sudo apt-get install -y python3 python3-venv python3-pip
-                '''
-            }
-        }
-
         stage('Clone Repository') {
             steps {
                 // Clone the repository using SSH and specify the branch
@@ -23,7 +13,7 @@ pipeline {
         
         stage('Set Up Environment') {
             steps {
-                // Set up Python environment and install Python dependencies
+                // Set up Python environment and install dependencies
                 sh 'python3 -m venv venv'
                 sh '''
                     . venv/bin/activate
