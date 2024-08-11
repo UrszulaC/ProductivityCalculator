@@ -33,7 +33,7 @@ pipeline {
             steps {
                 git url: 'git@github.com:UrszulaC/ProductivityCalculator.git',
                     branch: 'main',
-                    credentialsId: 'your-ssh-credentials-id'
+                    credentialsId: 'NewSSH'
             }
         }
 
@@ -50,7 +50,7 @@ print(f'HOST={config.HOST}\\nUSER={config.USER}\\nPASSWORD={config.PASSWORD}\\nD
                         ''',
                         returnStdout: true
                     ).trim().split('\n')
-                    
+
                     for (configVar in configVars) {
                         def (key, value) = configVar.split('=')
                         env."${key}" = value
