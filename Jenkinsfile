@@ -36,30 +36,29 @@ pipeline {
                     credentialsId: 'your-ssh-credentials-id'
             }
         }
-        
         stage('Load Config') {
-            steps {
-                script {
-                    // Use Python to extract the variables from config.py and set them as environment variables
-                    def configVars = sh(
-                        script: '''
-                            . venv/bin/activate
-                            python3 -c "
+    steps {
+        script {
+            // Load configuration variables from config.py using Python and set them as environment variables
+            def configVars = sh(
+                script: '''
+                    . venv/bin/activate
+                    python3 -c "
 import config
 print(f'HOST={config.HOST}\\nUSER={config.USER}\\nPASSWORD={config.PASSWORD}\\nDATABASE={config.DATABASE}')
-                            "
-                        ''',
-                        returnStdout: true
-                    ).trim()
-
-                    def configMap = configVars.split('\n').collectEntries { it.split('=') }
-                    env.HOST = configMap['HOST']
-                    env.USER = configMap['USER']
-                    env.PASSWORD = configMap['PASSWORD']
-                    env.DATABASE = configMap['DATABASE']
-                }
+                    "
+                ''',
+                returnStdout: true
+            ).trim().split('\n')
+            
+            for (configVar in configVars) {
+                def (key, value) = configVar.split('=')
+                env."${key}" = value
             }
         }
+    }
+}
+
 
         stage('Run Tests') {
             steps {
