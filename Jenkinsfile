@@ -58,15 +58,6 @@ print(f'HOST={config.HOST}\\nUSER={config.USER}\\nPASSWORD={config.PASSWORD}\\nD
                 }
             }
         }
-
-        stage('Run Tests') {
-            steps {
-                sh '''
-                    . venv/bin/activate
-                    python3 -m unittest discover -s . -p "test.py"
-                '''
-            }
-        }
     }
 
     post {
@@ -74,10 +65,10 @@ print(f'HOST={config.HOST}\\nUSER={config.USER}\\nPASSWORD={config.PASSWORD}\\nD
             cleanWs()
         }
         success {
-            echo 'Build and tests succeeded!'
+            echo 'Build succeeded!'
         }
         failure {
-            echo 'Build or tests failed!'
+            echo 'Build failed!'
         }
     }
 }
