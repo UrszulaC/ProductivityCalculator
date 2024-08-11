@@ -1,50 +1,16 @@
+
+
+
 pipeline {
     agent any
-
     stages {
-        stage('Clone Repository') {
+        stage('Pipeline Stages'){
             steps {
-                // Clone the repository from version control
-                git branch: 'main', url: 'git@github.com:UrszulaC/ProductivityCalculator.git', credentialsId: 'NewSSH'
+                sh "ls"
             }
         }
-        
-        stage('Set Up Environment') {
-                        steps {
-                sh 'rm -rf venv' // Delete any existing virtual environment
-                sh 'python3 -m venv venv' // Create a new virtual environment
-                sh '. venv/bin/activate' // Activate the virtual environment
-                sh 'pip install -r requirements.txt' // Install dependencies
-            }
-        }
-    }
-}
-        stage('Run Tests') {
+        stage(‘second stage’){
             steps {
-                // Activate virtual environment and run tests
-                sh '''
-                . venv/bin/activate
-                pytest --junitxml=report.xml
-                '''
+                sh “pwd”
             }
-        }
-    }
-
-    post {
-        always {
-            // Archive test reports
-            junit 'report.xml'
-
-            // Clean up the workspace
-            cleanWs()
-        }
-        success {
-            // Notify of success
-            echo 'Build succeeded!'
-        }
-        failure {
-            // Notify of failure
-            echo 'Build failed!'
-        }
-    }
 }
