@@ -13,8 +13,6 @@ pipeline {
                 sh '''
                     sudo apt-get update
                     sudo apt-get install -y python3 python3-venv python3-pip mysql-server
-                '''
-                sh '''
                     python3 -m venv venv
                     . venv/bin/activate
                     pip install --upgrade pip
@@ -35,7 +33,7 @@ pipeline {
             steps {
                 git url: 'git@github.com:UrszulaC/ProductivityCalculator.git',
                     branch: 'main',
-                    credentialsId: 'NewSSH'
+                    credentialsId: 'your-ssh-credentials-id'
             }
         }
 
