@@ -33,7 +33,7 @@ pipeline {
             steps {
                 git url: 'git@github.com:UrszulaC/ProductivityCalculator.git',
                     branch: 'main',
-                    credentialsId: 'NewSSH'
+                    credentialsId: 'your-ssh-credentials-id'
             }
         }
 
