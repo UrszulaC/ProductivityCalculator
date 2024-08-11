@@ -58,17 +58,16 @@ print(f'HOST={config.HOST}\\nUSER={config.USER}\\nPASSWORD={config.PASSWORD}\\nD
         }
     }
 }
-
-
         stage('Run Tests') {
             steps {
-                // Run unit tests
+                // Run unit tests in the virtual environment
                 sh '''
                     . venv/bin/activate
                     python3 -m unittest discover -s . -p "test.py"
-                '''
+                    '''
             }
         }
+
     }
 
     post {
