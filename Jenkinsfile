@@ -1,21 +1,13 @@
 pipeline {
     agent any
 
-    environment {
-        // Placeholder values, will be overridden by the values from config.py
-        HOST = ''
-        USER = ''
-        PASSWORD = ''
-        DATABASE = ''
-    }
-
     stages {
         stage('Install Dependencies') {
             steps {
                 // Install necessary packages
                 sh '''
-                    echo "jenkins" | sudo -S apt-get update
-                    echo "jenkins" | sudo -S apt-get install -y python3 python3-venv python3-pip mysql-server
+                    sudo apt-get update
+                    sudo apt-get install -y python3 python3-venv python3-pip mysql-server
                 '''
                 // Set up Python environment
                 sh '''
@@ -31,7 +23,7 @@ pipeline {
             steps {
                 // Start MySQL service
                 sh '''
-                    echo "jenkins" | sudo -S service mysql start
+                    sudo service mysql start
                 '''
             }
         }
@@ -41,7 +33,7 @@ pipeline {
                 // Clone the repository using SSH and specify the branch
                 git url: 'git@github.com:UrszulaC/ProductivityCalculator.git', 
                     branch: 'main', 
-                    credentialsId: 'NewSSH'
+                    credentialsId: 'your-ssh-credentials-id'
             }
         }
         
