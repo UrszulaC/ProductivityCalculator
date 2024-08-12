@@ -32,7 +32,10 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
-                    #!/bin/bash -e
+                    #!/bin/bash
+
+                    set -x  # Enable script debugging
+
                     if [ -d "venv" ]; then
                         echo "Virtual environment found. Activating..."
                         . venv/bin/activate
@@ -49,6 +52,8 @@ pipeline {
                     # Run the tests
                     echo "Running tests..."
                     python3 -m unittest discover -s tests -p 'test.py'
+
+                    set +x  # Disable script debugging
                 '''
             }
         }
