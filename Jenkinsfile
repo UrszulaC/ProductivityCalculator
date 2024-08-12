@@ -32,6 +32,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
+                    #!/bin/bash
                     set -x  # Enable script debugging
 
                     # Activate the virtual environment
