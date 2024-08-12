@@ -39,11 +39,11 @@ pipeline {
                     # Check if the virtual environment exists
                     if [ -d "venv" ]; then
                         echo "Virtual environment found. Activating..."
-                        source venv/bin/activate  # Use 'source' to activate
+                        . venv/bin/activate  # Use '.' to activate
                     else
                         echo "Virtual environment not found. Creating..."
                         python3 -m venv venv
-                        source venv/bin/activate  # Use 'source' to activate
+                        . venv/bin/activate  # Use '.' to activate
                     fi
 
                     # Verify activation
