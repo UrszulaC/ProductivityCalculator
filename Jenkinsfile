@@ -35,11 +35,11 @@ pipeline {
             #!/bin/bash
             if [ -d "venv" ]; then
                 echo "Virtual environment found. Activating..."
-                source venv/bin/activate
+                . venv/bin/activate
             else
                 echo "Virtual environment not found. Creating..."
                 python3 -m venv venv
-                source venv/bin/activate
+                . venv/bin/activate
             fi
 
             python3 -m unittest discover -s tests -p 'test.py'
