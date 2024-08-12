@@ -32,17 +32,16 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
-                    #!/bin/bash
                     set -x  # Enable script debugging
 
-                    # Check if the virtual environment exists
+                    # Activate the virtual environment
                     if [ -d "venv" ]; then
                         echo "Virtual environment found. Activating..."
-                        . venv/bin/activate  # Use '.' to activate
+                        . venv/bin/activate
                     else
                         echo "Virtual environment not found. Creating..."
                         python3 -m venv venv
-                        . venv/bin/activate  # Use '.' to activate
+                        . venv/bin/activate
                     fi
 
                     # Verify activation
@@ -57,20 +56,6 @@ pipeline {
                 '''
             }
         }
-    }
-
-    post {
-        always {
-            cleanWs()
-        }
-        success {
-            echo 'Build succeeded!'
-        }
-        failure {
-            echo 'Build failed!'
-        }
-    }
-}
     }
 
     post {
