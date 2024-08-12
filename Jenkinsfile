@@ -33,7 +33,6 @@ pipeline {
             steps {
                 sh '''
                     #!/bin/bash
-
                     set -x  # Enable script debugging
 
                     # Check if the virtual environment exists
@@ -58,6 +57,20 @@ pipeline {
                 '''
             }
         }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo 'Build succeeded!'
+        }
+        failure {
+            echo 'Build failed!'
+        }
+    }
+}
     }
 
     post {
