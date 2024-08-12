@@ -8,53 +8,23 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Build Docker Image') {
             steps {
-                sh '''
-                    sudo apt-get update
-                    sudo apt-get install -y python3 python3-venv python3-pip mysql-server
-                    python3 -m venv venv
-                    . venv/bin/activate
-                    pip install --upgrade pip
-                    pip install -r requirements.txt mysql-connector-python
-                '''
+                script {
+                    // Build the Docker image
+                    docker.build('my-python-app')
+                }
             }
         }
 
-        stage('Start MySQL Service') {
+        stage('Run Tests in Docker') {
             steps {
-                sh '''
-                    sudo service mysql start
-                '''
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                sh '''
-                    #!/bin/bash
-                    set -x  # Enable script debugging
-
-                    # Activate the virtual environment
-                    if [ -d "venv" ]; then
-                        echo "Virtual environment found. Activating..."
-                        . venv/bin/activate
-                    else
-                        echo "Virtual environment not found. Creating..."
-                        python3 -m venv venv
-                        . venv/bin/activate
-                    fi
-
-                    # Verify activation
-                    echo "Python executable: $(which python3)"
-                    echo "Python version: $(python3 --version)"
-
-                    # Run the tests
-                    echo "Running tests..."
-                    python3 -m unittest discover -s tests -p 'test.py'
-
-                    set +x  # Disable script debugging
-                '''
+                script {
+                    // Run the Docker container and execute tests
+                    docker.image('my-python-app').inside {
+                        sh 'python -m unittest discover -s tests -p "test.py"'
+                    }
+                }
             }
         }
     }
