@@ -42,6 +42,8 @@ pipeline {
                 . venv/bin/activate
             fi
 
+             # Run the tests
+            echo "Running tests..."
             python3 -m unittest discover -s tests -p 'test.py'
         '''
     }
