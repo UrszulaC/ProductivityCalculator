@@ -32,28 +32,27 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
-                    #!/bin/bash
-                        set -x  # Enable script debugging
+                    set -x  # Enable script debugging
 
-                        # Check if the virtual environment exists
-                        if [ -d "venv" ]; then
-                            echo "Virtual environment found. Activating..."
-                            . venv/bin/activate
-                        else
-                            echo "Virtual environment not found. Creating..."
-                            python3 -m venv venv
-                            . venv/bin/activate
-                        fi
+                    # Activate the virtual environment
+                    if [ -d "venv" ]; then
+                        echo "Virtual environment found. Activating..."
+                        . venv/bin/activate
+                    else
+                        echo "Virtual environment not found. Creating..."
+                        python3 -m venv venv
+                        . venv/bin/activate
+                    fi
 
-                        # Verify activation
-                        echo "Python executable: $(which python3)"
-                        echo "Python version: $(python3 --version)"
+                    # Verify activation
+                    echo "Python executable: $(which python3)"
+                    echo "Python version: $(python3 --version)"
 
-                        # Run the tests
-                        echo "Running tests..."
-                        python3 -m unittest discover -s tests -p 'test.py'
+                    # Run the tests
+                    echo "Running tests..."
+                    python3 -m unittest discover -s tests -p 'test.py'
 
-                        set +x  # Disable script debugging
+                    set +x  # Disable script debugging
                 '''
             }
         }
