@@ -62,6 +62,15 @@ print(f'HOST={config.HOST}\\nUSER={config.USER}\\nPASSWORD={config.PASSWORD}\\nD
                 }
             }
         }
+
+        stage('Run Tests') {  // New test stage added here
+            steps {
+                sh '''
+                    . venv/bin/activate
+                    python3 -m unittest discover -s tests -p 'test.py'
+                '''
+            }
+        }
     }
 
     post {
