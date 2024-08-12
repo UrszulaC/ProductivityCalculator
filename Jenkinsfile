@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    triggers {
-        pollSCM('H/5 * * * *') // Polls the SCM every 5 minutes
-    }
-
     stages {
         stage('Checkout SCM') {
             steps {
@@ -33,44 +29,24 @@ pipeline {
             }
         }
 
-        stage('Clone Repository') {
-            steps {
-                git url: 'git@github.com:UrszulaC/ProductivityCalculator.git',
-                    branch: 'main',
-                    credentialsId: 'NewSSH'
-            }
-        }
-
-        stage('Load Config') {
-            steps {
-                script {
-                    def configVars = sh(
-                        script: '''
-                            . venv/bin/activate
-                            python3 -c "
-import config
-print(f'HOST={config.HOST}\\nUSER={config.USER}\\nPASSWORD={config.PASSWORD}\\nDATABASE={config.DATABASE}')
-                            "
-                        ''',
-                        returnStdout: true
-                    ).trim().split('\n')
-
-                    for (configVar in configVars) {
-                        def (key, value) = configVar.split('=')
-                        env."${key}" = value
-                    }
-                }
-            }
-        }
-
-        stage('Run Tests') {  // New test stage added here
+        stage('Run Tests') {
             steps {
                 sh '''
-                    . venv/bin/activate
+                    if [ -d "venv" ]; then
+                        echo "Virtual environment found. Activating..."
+                        source venv/bin/activate
+                    else
+                        echo "Virtual environment not found. Creating..."
+                        python3 -m venv venv
+                        source venv/bin/activate
+                    fi
+
                     python3 -m unittest discover -s tests -p 'test.py'
                 '''
             }
         }
+
+        // Other stages...
     }
 
     post {
