@@ -1,22 +1,20 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim
+# Use an appropriate Python base image
+FROM python:3.9
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Copy requirements file and install dependencies
+COPY requirements.txt .
+RUN pip install --upgrade pip \
+    && pip install -r requirements.txt
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+# Copy the rest of the application code
+COPY . .
 
-# Create and activate a virtual environment
-RUN python -m venv venv
-RUN . venv/bin/activate
+# Create a virtual environment
+RUN python -m venv /venv
+ENV PATH="/venv/bin:$PATH"
 
-# Ensure the virtual environment is used
-ENV PATH="/app/venv/bin:$PATH"
-
-# Run tests when the container launches
-CMD ["python", "-m", "unittest", "discover", "-s", "tests", "-p", "test.py"]
+# Set the entrypoint for the container
+ENTRYPOINT ["python"]
