@@ -1,18 +1,21 @@
 FROM python:3.9
 
+# Set working directory
 WORKDIR /app
 
-# Create a virtual environment
-RUN python -m venv /venv
+# Copy the requirements file and install dependencies
+COPY requirements.txt .
 
-# Install dependencies
-RUN /venv/bin/pip install --upgrade pip && \
+# Create a virtual environment and install dependencies
+RUN python -m venv /venv && \
+    /venv/bin/pip install --upgrade pip && \
     /venv/bin/pip install -r requirements.txt
-
-# Install mysql-connector-python within the virtual environment
-RUN /venv/bin/pip install mysql-connector-python
 
 # Copy the rest of the application code
 COPY . .
 
-CMD ["/bin/bash"]
+# Activate virtual environment and set it as the default Python environment
+ENV PATH="/venv/bin:$PATH"
+
+# Default command
+CMD ["python", "your_app.py"]  # Replace 'your_app.py' with the entry point of your application

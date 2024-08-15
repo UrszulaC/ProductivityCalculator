@@ -11,7 +11,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build('my-python-app')
+                    docker.build('my-python-app:${env.BUILD_ID}')
                 }
             }
         }
@@ -19,8 +19,17 @@ pipeline {
         stage('Run Tests in Docker') {
             steps {
                 script {
-                    docker.image('my-python-app').inside {
-                        sh 'source /venv/bin/activate && python -m unittest discover -s tests -p "test.py"'
+                    docker.image("my-python-app:${env.BUILD_ID}").inside {
+                        sh '''
+                            if [ -d /venv ]; then
+                                source /venv/bin/activate
+                            else
+                                python -m venv /venv
+                                source /venv/bin/activate
+                                pip install -r requirements.txt
+                            fi
+                            python -m unittest discover -s tests -p "*.py"
+                        '''
                     }
                 }
             }
