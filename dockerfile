@@ -16,5 +16,7 @@ COPY . .
 RUN python -m venv /venv
 ENV PATH="/venv/bin:$PATH"
 
+CMD ["bash"]
+
 # Set the entrypoint for the container
 ENTRYPOINT ["python"]
