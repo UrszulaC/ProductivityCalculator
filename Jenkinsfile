@@ -1,6 +1,16 @@
 pipeline {
     agent any
 
+    environment {
+        // Define MySQL environment variables
+        HOST = 'localhost'
+        USER='ula'
+        PASSWORD='Gordito10?'
+        DATABASE= 'ProductivityCalculator'
+        PORT = '3306'
+        
+    }
+
     stages {
         stage('Checkout SCM') {
             steps {
