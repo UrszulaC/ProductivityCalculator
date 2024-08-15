@@ -11,7 +11,11 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build('my-python-app:${env.BUILD_ID}')
+                    // Sanitize the BUILD_ID by removing any invalid characters
+                    def sanitizedBuildId = env.BUILD_ID.replaceAll('[^a-zA-Z0-9_.-]', '_')
+
+                    // Ensure the image name and tag conform to the valid pattern
+                    docker.build("my-python-app:${sanitizedBuildId}")
                 }
             }
         }
@@ -19,7 +23,8 @@ pipeline {
         stage('Run Tests in Docker') {
             steps {
                 script {
-                    docker.image("my-python-app:${env.BUILD_ID}").inside {
+                    def sanitizedBuildId = env.BUILD_ID.replaceAll('[^a-zA-Z0-9_.-]', '_')
+                    docker.image("my-python-app:${sanitizedBuildId}").inside {
                         sh '''
                             if [ -d /venv ]; then
                                 source /venv/bin/activate
