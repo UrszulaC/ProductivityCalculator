@@ -20,9 +20,14 @@ pipeline {
         stage('Run Tests in Docker') {
             steps {
                 script {
-                    // Run the Docker container and execute tests
+                    // Run the Docker container and execute tests in a virtual environment
                     docker.image('my-python-app').inside {
-                        sh 'python -m unittest discover -s tests -p "test.py"'
+                        sh '''
+                            # Activate the virtual environment
+                            source /venv/bin/activate
+                            # Run tests
+                            python -m unittest discover -s tests -p "test.py"
+                        '''
                     }
                 }
             }
