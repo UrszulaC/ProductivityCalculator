@@ -2,14 +2,12 @@ FROM python:3.9
 
 WORKDIR /app
 
-# Install dependencies
-COPY requirements.txt .
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
-
-# Create and activate virtual environment
+# Create a virtual environment
 RUN python -m venv /venv
-ENV PATH="/venv/bin:$PATH"
+
+# Install dependencies
+RUN /venv/bin/pip install --upgrade pip && \
+    /venv/bin/pip install -r requirements.txt
 
 # Install mysql-connector-python within the virtual environment
 RUN /venv/bin/pip install mysql-connector-python
