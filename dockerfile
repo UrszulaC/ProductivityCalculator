@@ -4,6 +4,9 @@ FROM python:3.9
 # Set the working directory
 WORKDIR /app
 
+# Install bash if it's not included by default
+RUN apt-get update && apt-get install -y bash
+
 # Copy requirements file and install dependencies
 COPY requirements.txt .
 RUN pip install --upgrade pip \
