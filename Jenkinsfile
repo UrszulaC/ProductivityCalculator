@@ -21,10 +21,10 @@ pipeline {
                 script {
                     docker.image('my-python-app').inside {
                         sh '''
-                            # Activate the virtual environment
-                            /bin/bash -c "source /venv/bin/activate"
-                            # Run tests
-                            python -m unittest discover -s tests -p 'test.py'
+                            # Activate the virtual environment and run tests
+                            /bin/bash -c "
+                            source /venv/bin/activate && \
+                            python -m unittest discover -s tests -p 'test.py'"
                         '''
                     }
                 }
