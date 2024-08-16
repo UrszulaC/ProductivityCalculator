@@ -4,7 +4,7 @@ services:
   app:
     build: .
     environment:
-      - HOST=192.168.68.51
+      - HOST=localhost
       - PORT=3306
       - USER=ula
       - PASSWORD=Gordito10
