@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Define MySQL environment variables
-        HOST = 'localhost'
+        HOST = 'mysql'
         USER='ula'
         PASSWORD='Gordito10?'
         DATABASE= 'ProductivityCalculator'
