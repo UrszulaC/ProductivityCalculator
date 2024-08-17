@@ -4,8 +4,8 @@ pipeline {
     environment {
         // Define MySQL environment variables
         HOST = 'localhost'
-        USER='ula'
-        PASSWORD='Gordito10?'
+        USER='root'
+        PASSWORD='gordito'
         DATABASE= 'ProductivityCalculator'
         PORT = '3306'
         
