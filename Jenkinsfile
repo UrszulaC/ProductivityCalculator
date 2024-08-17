@@ -1,48 +1,25 @@
 pipeline {
     agent any
 
-    environment {
-        // Define MySQL environment variables
-        HOST = 'mysql'
-        USER='ula'
-        PASSWORD='Gordito10?'
-        DATABASE= 'ProductivityCalculator'
-        PORT = '3306'
-        
-    }
-
     stages {
-        stage('Checkout SCM') {
+        stage('Checkout') {
             steps {
-                checkout scm
+                git 'https://github.com/UrszulaC/ProductivityCalculator.git'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build and Run') {
             steps {
                 script {
-                    def sanitizedBuildId = env.BUILD_ID.replaceAll('[^a-zA-Z0-9_.-]', '_')
-                    docker.build("my-python-app:${sanitizedBuildId}")
+                    sh 'docker-compose up -d --build'
                 }
             }
         }
 
-        stage('Run Tests in Docker') {
+        stage('Run Tests') {
             steps {
                 script {
-                    def sanitizedBuildId = env.BUILD_ID.replaceAll('[^a-zA-Z0-9_.-]', '_')
-                    docker.image("my-python-app:${sanitizedBuildId}").inside {
-                        sh '''
-                            if [ -d /venv ]; then
-                                . /venv/bin/activate
-                            else
-                                python -m venv /venv
-                                . /venv/bin/activate
-                                pip install -r requirements.txt
-                            fi
-                            python -m unittest discover -s tests -p "*.py"
-                        '''
-                    }
+                    sh 'docker exec -it $(docker-compose ps -q app) ./wait-for-it.sh mysql:3306 -- python -m unittest discover -s tests -p "*.py"'
                 }
             }
         }
@@ -50,13 +27,9 @@ pipeline {
 
     post {
         always {
-            cleanWs()
-        }
-        success {
-            echo 'Build succeeded!'
-        }
-        failure {
-            echo 'Build failed!'
+            script {
+                sh 'docker-compose down'
+            }
         }
     }
 }
