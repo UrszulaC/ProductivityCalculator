@@ -20,9 +20,4 @@ services:
       MYSQL_DATABASE: ProductivityCalculator
     ports:
       - "3306:3306"
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
+    
