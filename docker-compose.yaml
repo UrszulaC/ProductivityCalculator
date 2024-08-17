@@ -6,8 +6,8 @@ services:
     environment:
       - HOST=localhost
       - PORT=3306
-      - USER=root
-      - PASSWORD=gordito
+      - USER=ula
+      - PASSWORD=Gordito10?
       - DATABASE=ProductivityCalculator
     depends_on:
       - mysql
