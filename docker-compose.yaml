@@ -6,16 +6,23 @@ services:
     environment:
       - HOST=mysql
       - PORT=3306
-      - USER=root
-      - PASSWORD=gordito
+      - USER=ula
+      - PASSWORD=Gordito10?
       - DATABASE=ProductivityCalculator
     depends_on:
       - mysql
+    networks:
+      - mynetwork
 
   mysql:
     image: mysql:5.7
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: mydatabase
+      MYSQL_ROOT_PASSWORD: gordito
+      MYSQL_DATABASE: ProductivityCalculator
     ports:
       - "3306:3306"
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
