@@ -21,5 +21,5 @@ COPY wait-for-it.sh /wait-for-it.sh
 RUN chmod +x /wait-for-it.sh
 
 # Default command
-CMD ["python", "app.py"]   
+   
 CMD ["./wait-for-it.sh", "mysql", "--", "python", "app.py"]
