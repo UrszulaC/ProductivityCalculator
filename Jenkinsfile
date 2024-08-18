@@ -7,7 +7,7 @@ pipeline {
         USER='root'
         PASSWORD='gordito'
         DATABASE= 'ProductivityCalculator'
-        PORT = '3306'
+        PORT = '3307'
         
     }
 
