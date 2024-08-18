@@ -5,7 +5,7 @@ services:
     build: .
     environment:
       - HOST=mysql
-      - PORT=3306
+      - PORT=3307
       - USER=ula
       - PASSWORD=Gordito10?
       - DATABASE=ProductivityCalculator
