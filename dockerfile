@@ -18,4 +18,4 @@ COPY . .
 ENV PATH="/venv/bin:$PATH"
 
 # Default command
-CMD ["python", "app.py"]  
+CMD ["python", "app.py"]
