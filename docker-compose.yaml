@@ -5,25 +5,17 @@ services:
     build: .
     environment:
       - HOST=mysql
-      - USER=ula
-      - PASSWORD=Gordito10?
+      - PORT=3306
+      - USER=root
+      - PASSWORD=gordito
       - DATABASE=ProductivityCalculator
     depends_on:
       - mysql
-    networks:
-      - app-network
 
   mysql:
     image: mysql:5.7
     environment:
-      MYSQL_ROOT_PASSWORD: gordito
-      MYSQL_DATABASE: ProductivityCalculator
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydatabase
     ports:
       - "3306:3306"
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge                                      
-    
