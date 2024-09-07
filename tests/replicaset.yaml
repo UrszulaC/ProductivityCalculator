@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: productivity-calculator-replicaset
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: productivity-calculator
+  template:
+    metadata:
+      labels:
+        app: productivity-calculator
+    spec:
+      containers:
+      - name: productivity-calculator
+        image: urszulach/python-app:latest
+        ports:
+        - containerPort: 80

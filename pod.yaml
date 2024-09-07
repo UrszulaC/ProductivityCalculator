@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: productivity-calculator-pod
+spec:
+  containers:
+  - name: productivity-calculator
+    image: urszulach/python-app:latest
+    ports:
+    - containerPort: 80
