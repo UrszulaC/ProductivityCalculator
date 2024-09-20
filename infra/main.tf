@@ -7,7 +7,11 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true
   enable_dns_hostnames = true
 }
-
+resource "aws_subnet" "main" {
+  vpc_id     = aws_vpc.main.id
+  cidr_block = "10.0.1.0/24"
+  availability_zone = "eu-west-2a"  
+}
 resource "aws_security_group" "allow_http" {
   vpc_id = aws_vpc.main.id
 
@@ -26,11 +30,9 @@ resource "aws_security_group" "allow_http" {
   }
 }
 resource "aws_instance" "web" {
-  ami           = "ami-0c55b159cbfafe1f0"
+  ami           = "ami-01ec84b284795cbc7"
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.main.id
-
-  iam_instance_profile = "web-instance-profile"
 
   root_block_device {
     encrypted = true
