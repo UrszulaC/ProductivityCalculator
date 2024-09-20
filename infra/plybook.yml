@@ -1,0 +1,25 @@
+---
+- hosts: web
+  become: yes
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Add user to the Docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Ensure security updates are enabled
+      apt:
+        name: unattended-upgrades
+        state: present
+
+    - name: Enable the firewall and allow traffic on port 80
+      ufw:
+        rule: allow
+        port: 80
+        proto: tcp
