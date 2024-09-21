@@ -60,28 +60,28 @@
 //         }
 //     }
 // }
-pipeline {
-    agent any
-    stages {
-        stage('Validate') {
-            steps {
-                sh 'terraform validate'
-            }
-        }
-        stage('Plan') {
-            steps {
-                sh 'terraform plan -out=tfplan'
-            }
-        }
-        stage('Apply') {
-            steps {
-                sh 'terraform apply tfplan'
-            }
-        }
-        stage('Test') {
-            steps {
-                sh 'ansible-playbook -i inventory.yml playbook.yml'
-            }
-        }
-    }
-}
+// pipeline {
+//     agent any
+//     stages {
+//         stage('Validate') {
+//             steps {
+//                 sh 'terraform validate'
+//             }
+//         }
+//         stage('Plan') {
+//             steps {
+//                 sh 'terraform plan -out=tfplan'
+//             }
+//         }
+//         stage('Apply') {
+//             steps {
+//                 sh 'terraform apply tfplan'
+//             }
+//         }
+//         stage('Test') {
+//             steps {
+//                 sh 'ansible-playbook -i inventory.yml playbook.yml'
+//             }
+//         }
+//     }
+// }
