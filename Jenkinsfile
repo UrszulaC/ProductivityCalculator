@@ -4,11 +4,10 @@ pipeline {
     environment {
         // Define MySQL environment variables
         HOST = 'sql'
-        USER='root'
-        PASSWORD='gordito'
-        DATABASE= 'ProductivityCalculator'
+        USER = 'root'
+        PASSWORD = 'gordito'
+        DATABASE = 'ProductivityCalculator'
         PORT = '3307'
-        
     }
 
     stages {
@@ -32,14 +31,13 @@ pipeline {
                 script {
                     def sanitizedBuildId = env.BUILD_ID.replaceAll('[^a-zA-Z0-9_.-]', '_')
                     docker.image("my-python-app:${sanitizedBuildId}").inside {
+                        // Execute shell commands
                         sh '''
-                            if [ -d /venv ]; then
-                                . /venv/bin/activate
-                            else
+                            if [ ! -d /venv ]; then
                                 python -m venv /venv
-                                . /venv/bin/activate
-                                pip install -r requirements.txt
                             fi
+                            . /venv/bin/activate
+                            pip install -r requirements.txt
                             python -m unittest discover -s tests -p "*.py"
                         '''
                     }
