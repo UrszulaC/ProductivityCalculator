@@ -15,70 +15,92 @@ pipeline {
     stages {
         stage('Checkout SCM') {
             steps {
-                checkout scm
+                script {
+                    dir('/var/lib/jenkins/workspace/ProductivityCalculator') {
+                        checkout scm
+                    }
+                }
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh '''
-                    sudo apt-get update
-                    sudo apt-get install -y python3 python3-venv python3-pip mysql-server
-                    python3 -m venv venv
-                    . venv/bin/activate  # Activate virtual environment
-                    venv/bin/pip install --upgrade pip  
-                    venv/bin/pip install -r requirements.txt mysql-connector-python  # Install packages inside the virtual environment
-                '''
+                script {
+                    dir('/var/lib/jenkins/workspace/ProductivityCalculator') {
+                        sh '''
+                            sudo apt-get update
+                            sudo apt-get install -y python3 python3-venv python3-pip mysql-server
+                            python3 -m venv venv
+                            . venv/bin/activate
+                            venv/bin/pip install --upgrade pip
+                            venv/bin/pip install -r requirements.txt mysql-connector-python
+                        '''
+                    }
+                }
             }
-        }  
-       
-
+        }
 
         stage('Build Application') {
             steps {
-                // Assuming there's a build command (e.g., for a Python application)
-                sh '''
-                    . venv/bin/activate
-                    python setup.py bdist_wheel
-                '''
+                script {
+                    dir('/var/lib/jenkins/workspace/ProductivityCalculator') {
+                        sh '''
+                            . venv/bin/activate
+                            python setup.py bdist_wheel
+                        '''
+                    }
+                }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh '''
-                    docker build -t ${DOCKER_IMAGE} .
-                '''
+                script {
+                    dir('/var/lib/jenkins/workspace/ProductivityCalculator') {
+                        sh '''
+                            docker build -t ${DOCKER_IMAGE} .
+                        '''
+                    }
+                }
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                    sh '''
-                        echo "$DOCKER_PASSWORD" | docker login ${DOCKER_REGISTRY} -u "$DOCKER_USERNAME" --password-stdin
-                        docker push ${DOCKER_IMAGE}
-                    '''
+                script {
+                    dir('/var/lib/jenkins/workspace/ProductivityCalculator') {
+                        withCredentials([usernamePassword(credentialsId: 'docker-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                            sh '''
+                                echo "$DOCKER_PASSWORD" | docker login ${DOCKER_REGISTRY} -u "$DOCKER_USERNAME" --password-stdin
+                                docker push ${DOCKER_IMAGE}
+                            '''
+                        }
+                    }
                 }
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh '''
-                    kubectl set image deployment/${K8S_DEPLOYMENT} ${K8S_DEPLOYMENT}=${DOCKER_IMAGE} --namespace=${K8S_NAMESPACE}
-                    kubectl rollout status deployment/${K8S_DEPLOYMENT} --namespace=${K8S_NAMESPACE}
-                '''
+                script {
+                    dir('/var/lib/jenkins/workspace/ProductivityCalculator') {
+                        sh '''
+                            kubectl set image deployment/${K8S_DEPLOYMENT} ${K8S_DEPLOYMENT}=${DOCKER_IMAGE} --namespace=${K8S_NAMESPACE}
+                            kubectl rollout status deployment/${K8S_DEPLOYMENT} --namespace=${K8S_NAMESPACE}
+                        '''
+                    }
+                }
             }
         }
 
         stage('Monitor Logs') {
             steps {
                 script {
-                    // Example: using kubectl logs to monitor the application logs
-                    sh '''
-                        kubectl logs -f deployment/${K8S_DEPLOYMENT} --namespace=${K8S_NAMESPACE}
-                    '''
+                    dir('/var/lib/jenkins/workspace/ProductivityCalculator') {
+                        sh '''
+                            kubectl logs -f deployment/${K8S_DEPLOYMENT} --namespace=${K8S_NAMESPACE}
+                        '''
+                    }
                 }
             }
         }
@@ -93,7 +115,6 @@ pipeline {
         }
         failure {
             echo 'Build failed!'
-            // You can add additional logging or notifications here
         }
     }
 }
