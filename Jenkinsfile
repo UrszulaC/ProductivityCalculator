@@ -72,3 +72,7 @@ print(f'HOST={config.HOST}\\nUSER={config.USER}\\nPASSWORD={config.PASSWORD}\\nD
             echo 'Build succeeded!'
         }
         failure {
+            echo 'Build failed!'
+        }
+    }
+}
