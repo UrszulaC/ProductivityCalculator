@@ -1,3 +1,10 @@
+The error you're encountering (`externally-managed-environment`) occurs when trying to install packages in a virtual environment on an Ubuntu system that uses the `apt` package manager to manage Python packages. This is part of a newer security feature introduced in Python to prevent conflicting installations between `apt` and `pip`.
+
+To resolve this, here are a few steps you can take to adjust your Jenkinsfile and ensure proper installation of Python packages in your virtual environment:
+
+### Adjusted Jenkinsfile
+
+```groovy
 pipeline {
     agent any
 
@@ -29,7 +36,7 @@ pipeline {
                     dir('/var/lib/jenkins/workspace/ProductivityCalculator') {
                         sh '''
                             sudo apt-get update
-                            sudo apt-get install -y python3 python3-venv python3-pip mysql-server
+                            sudo apt-get install -y python3 python3-venv python3-pip mysql-server python3-full
                             python3 -m venv venv  # No sudo here
                             chown -R jenkins:jenkins venv  # Ensure Jenkins owns the venv
                         '''
@@ -37,8 +44,9 @@ pipeline {
                     // Set the path to the virtual environment
                     withEnv(["PATH+VENV=${env.WORKSPACE}/venv/bin"]) {
                         sh '''
-                            pip install --upgrade pip
-                            pip install -r requirements.txt mysql-connector-python
+                            # Use the pip in the virtual environment to install packages
+                            ./venv/bin/pip install --upgrade pip
+                            ./venv/bin/pip install --no-warn-script-location -r requirements.txt mysql-connector-python
                         '''
                     }
                 }
