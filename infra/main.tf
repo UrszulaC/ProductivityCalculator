@@ -100,3 +100,8 @@ resource "aws_instance" "infra_instance" {
 output "instance_ip" {
   value = aws_instance.infra_instance.public_ip
 }
+
+# Output the public IP of the instance
+output "instance_ip" {
+  value = aws_instance.infra_instance.public_ip
+}

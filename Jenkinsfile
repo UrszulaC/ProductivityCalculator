@@ -74,4 +74,3 @@ print(f'HOST={config.HOST}\\nUSER={config.USER}\\nPASSWORD={config.PASSWORD}\\nD
         }
     }
 }
-    
