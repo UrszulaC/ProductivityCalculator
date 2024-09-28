@@ -32,9 +32,13 @@ pipeline {
                             sudo apt-get install -y python3 python3-venv python3-pip mysql-server
                             python3 -m venv venv  # No sudo here
                             chown -R jenkins:jenkins venv  # Ensure Jenkins owns the venv
-                            . venv/bin/activate
-                            venv/bin/pip install --upgrade pip
-                            venv/bin/pip install -r requirements.txt mysql-connector-python
+                        '''
+                    }
+                    // Set the path to the virtual environment
+                    withEnv(["PATH+VENV=${env.WORKSPACE}/venv/bin"]) {
+                        sh '''
+                            pip install --upgrade pip
+                            pip install -r requirements.txt mysql-connector-python
                         '''
                     }
                 }
@@ -45,10 +49,11 @@ pipeline {
             steps {
                 script {
                     dir('/var/lib/jenkins/workspace/ProductivityCalculator') {
-                        sh '''
-                            . venv/bin/activate
-                            python setup.py bdist_wheel
-                        '''
+                        withEnv(["PATH+VENV=${env.WORKSPACE}/venv/bin"]) {
+                            sh '''
+                                python setup.py bdist_wheel
+                            '''
+                        }
                     }
                 }
             }
@@ -109,7 +114,7 @@ pipeline {
 
     post {
         always {
-            cleanWs()
+            cleanWs() // Clean workspace after every build
         }
         success {
             echo 'Build succeeded!'
