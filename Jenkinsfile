@@ -19,18 +19,18 @@ pipeline {
             }
         }
 
-       stage('Install Dependencies') {
+        stage('Install Dependencies') {
             steps {
                 sh '''
                     sudo apt-get update
                     sudo apt-get install -y python3 python3-venv python3-pip mysql-server
                     python3 -m venv venv
-                    . venv/bin/activate  # use . instead of source
-                    pip install --upgrade pip
-                    pip install -r requirements.txt mysql-connector-python
+                    . venv/bin/activate  # Activate virtual environment
+                    venv/bin/pip install --upgrade pip  
+                    venv/bin/pip install -r requirements.txt mysql-connector-python  # Install packages inside the virtual environment
                 '''
             }
-       }    
+        }  
        
 
 
