@@ -1,10 +1,3 @@
-The error you're encountering (`externally-managed-environment`) occurs when trying to install packages in a virtual environment on an Ubuntu system that uses the `apt` package manager to manage Python packages. This is part of a newer security feature introduced in Python to prevent conflicting installations between `apt` and `pip`.
-
-To resolve this, here are a few steps you can take to adjust your Jenkinsfile and ensure proper installation of Python packages in your virtual environment:
-
-### Adjusted Jenkinsfile
-
-```groovy
 pipeline {
     agent any
 
