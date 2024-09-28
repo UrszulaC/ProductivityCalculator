@@ -5,6 +5,13 @@ pipeline {
         pollSCM('H/5 * * * *') // Polls the SCM every 5 minutes
     }
 
+    environment {
+        DOCKER_IMAGE = 'urszulach/python-app'
+        DOCKER_REGISTRY = 'docker.io'
+        K8S_DEPLOYMENT = 'productivity-calculator-deployment'
+        K8S_NAMESPACE = 'default'
+    }
+
     stages {
         stage('Checkout SCM') {
             steps {
@@ -25,40 +32,51 @@ pipeline {
             }
         }
 
-        stage('Start MySQL Service') {
+        stage('Build Application') {
             steps {
+                // Assuming there's a build command (e.g., for a Python application)
                 sh '''
-                    sudo service mysql start
+                    . venv/bin/activate
+                    python setup.py bdist_wheel
                 '''
             }
         }
 
-        stage('Clone Repository') {
+        stage('Build Docker Image') {
             steps {
-                git url: 'git@github.com:UrszulaC/ProductivityCalculator.git',
-                    branch: 'main',
-                    credentialsId: 'NewSSH'
+                sh '''
+                    docker build -t ${DOCKER_IMAGE} .
+                '''
             }
         }
 
-        stage('Load Config') {
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                    sh '''
+                        echo "$DOCKER_PASSWORD" | docker login ${DOCKER_REGISTRY} -u "$DOCKER_USERNAME" --password-stdin
+                        docker push ${DOCKER_IMAGE}
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh '''
+                    kubectl set image deployment/${K8S_DEPLOYMENT} ${K8S_DEPLOYMENT}=${DOCKER_IMAGE} --namespace=${K8S_NAMESPACE}
+                    kubectl rollout status deployment/${K8S_DEPLOYMENT} --namespace=${K8S_NAMESPACE}
+                '''
+            }
+        }
+
+        stage('Monitor Logs') {
             steps {
                 script {
-                    def configVars = sh(
-                        script: '''
-                            . venv/bin/activate
-                            python3 -c "
-import config
-print(f'HOST={config.HOST}\\nUSER={config.USER}\\nPASSWORD={config.PASSWORD}\\nDATABASE={config.DATABASE}')
-                            "
-                        ''',
-                        returnStdout: true
-                    ).trim().split('\n')
-
-                    for (configVar in configVars) {
-                        def (key, value) = configVar.split('=')
-                        env."${key}" = value
-                    }
+                    // Example: using kubectl logs to monitor the application logs
+                    sh '''
+                        kubectl logs -f deployment/${K8S_DEPLOYMENT} --namespace=${K8S_NAMESPACE}
+                    '''
                 }
             }
         }
@@ -73,6 +91,7 @@ print(f'HOST={config.HOST}\\nUSER={config.USER}\\nPASSWORD={config.PASSWORD}\\nD
         }
         failure {
             echo 'Build failed!'
+            // You can add additional logging or notifications here
         }
     }
 }
