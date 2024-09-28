@@ -30,16 +30,16 @@ pipeline {
                         sh '''
                             sudo apt-get update
                             sudo apt-get install -y python3 python3-venv python3-pip mysql-server
-                            python3 -m venv venv
-                            sudo chown -R jenkins:jenkins venv  # Ensure Jenkins owns the venv
+                            python3 -m venv venv  # No sudo here
+                            chown -R jenkins:jenkins venv  # Ensure Jenkins owns the venv
                             . venv/bin/activate
                             venv/bin/pip install --upgrade pip
                             venv/bin/pip install -r requirements.txt mysql-connector-python
                         '''
+                    }
+                }
             }
         }
-    }
-}
 
         stage('Build Application') {
             steps {
