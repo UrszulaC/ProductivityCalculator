@@ -27,7 +27,9 @@ pipeline {
 
         stage('Start MySQL Service') {
             steps {
-                sh 'sudo service mysql start'
+                sh '''
+                    sudo service mysql start
+                '''
             }
         }
 
@@ -70,7 +72,3 @@ print(f'HOST={config.HOST}\\nUSER={config.USER}\\nPASSWORD={config.PASSWORD}\\nD
             echo 'Build succeeded!'
         }
         failure {
-            echo 'Build failed!'
-        }
-    }
-}
