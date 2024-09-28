@@ -29,6 +29,10 @@ pipeline {
                     pip install --upgrade pip
                     pip install -r requirements.txt mysql-connector-python
                 '''
+            }
+       }    
+       
+
 
         stage('Build Application') {
             steps {
