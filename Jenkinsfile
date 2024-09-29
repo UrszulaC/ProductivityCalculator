@@ -26,15 +26,14 @@ pipeline {
                     sudo apt-get install -y python3 python3-venv python3-pip mysql-server
                     python3 -m venv venv
                     . venv/bin/activate
-                    pip install --upgrade pip
-                    pip install -r requirements.txt mysql-connector-python
+                    pip install --upgrade pip --break-system-packages
+                    pip install -r requirements.txt mysql-connector-python --break-system-packages
                 '''
             }
         }
 
         stage('Build Application') {
             steps {
-                // Assuming there's a build command (e.g., for a Python application)
                 sh '''
                     . venv/bin/activate
                     python setup.py bdist_wheel
@@ -73,7 +72,6 @@ pipeline {
         stage('Monitor Logs') {
             steps {
                 script {
-                    // Example: using kubectl logs to monitor the application logs
                     sh '''
                         kubectl logs -f deployment/${K8S_DEPLOYMENT} --namespace=${K8S_NAMESPACE}
                     '''
@@ -91,7 +89,6 @@ pipeline {
         }
         failure {
             echo 'Build failed!'
-            // You can add additional logging or notifications here
         }
     }
 }
