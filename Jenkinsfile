@@ -32,15 +32,6 @@ pipeline {
             }
         }
 
-        stage('Build Application') {
-            steps {
-                sh '''
-                    . venv/bin/activate
-                    python setup.py bdist_wheel
-                '''
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 sh '''
