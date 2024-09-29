@@ -52,7 +52,7 @@ pipeline {
         }
 
     
-        stages {
+        
         stage('Deploy to Kubernetes') {
             steps {
                 withCredentials([file(credentialsId: 'kubeconfig-credentials', variable: 'KUBECONFIG_FILE')]) {
@@ -64,7 +64,7 @@ pipeline {
                 }
             }
         }
-    }
+    
     
 
         stage('Monitor Logs') {
