@@ -21,7 +21,7 @@ pipeline {
             steps {
                 script {
                     def sanitizedBuildId = env.BUILD_ID.replaceAll('[^a-zA-Z0-9_.-]', '_')
-                    docker.build("my-python-app:${sanitizedBuildId}")
+                    docker.build("python-app:${sanitizedBuildId}")
                 }
             }
         }
@@ -30,7 +30,7 @@ pipeline {
             steps {
                 script {
                     def sanitizedBuildId = env.BUILD_ID.replaceAll('[^a-zA-Z0-9_.-]', '_')
-                    docker.image("my-python-app:${sanitizedBuildId}").inside {
+                    docker.image("python-app:${sanitizedBuildId}").inside {
                         // Execute shell commands
                         sh '''
                             if [ ! -d /venv ]; then
