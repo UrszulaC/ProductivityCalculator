@@ -54,7 +54,7 @@ pipeline {
     
         stage('Deploy to Kubernetes') {
             steps {
-                withCredentials([string(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_CONTENT')]) {
+                withCredentials([string(credentialsId: 'kubeconfig-credentials', variable: 'KUBECONFIG_CONTENT')]) {
                     // Create a temporary kubeconfig file
                     sh '''
                         echo "$KUBECONFIG_CONTENT" > /tmp/kubeconfig
