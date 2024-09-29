@@ -1,28 +1,19 @@
-version: '3.8'
-
+version: '3'
 services:
   app:
     build: .
-    environment:
-      - HOST=mysql
-      - PORT=3307
-      - USER=ula
-      - PASSWORD=Gordito10?
-      - DATABASE=ProductivityCalculator
     depends_on:
-      - mysql
-    networks:
-      - mynetwork
-
-  mysql:
+      - db
+    environment:
+      HOST: db
+      USER: root
+      PASSWORD: gordito
+      DATABASE: ProductivityCalculator
+      PORT: 3307
+  db:
     image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: gordito
       MYSQL_DATABASE: ProductivityCalculator
     ports:
       - "3307:3306"
-    networks:
-      - mynetwork
-
-networks:
-  mynetwork:
