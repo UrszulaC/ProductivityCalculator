@@ -51,8 +51,7 @@ pipeline {
             }
         }
 
-       stages {
-       stages {
+    
         stage('Deploy to Kubernetes') {
             steps {
                 withCredentials([string(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_CONTENT')]) {
@@ -66,7 +65,7 @@ pipeline {
                 }
             }
         }
-    }
+    
 
         stage('Monitor Logs') {
             steps {
