@@ -1,13 +1,15 @@
 pipeline {
     agent any
 
+    triggers {
+        pollSCM('H/5 * * * *') // Polls the SCM every 5 minutes
+    }
+
     environment {
-        // Define MySQL environment variables
-        HOST = 'sql'
-        USER = 'root'
-        PASSWORD = 'gordito'
-        DATABASE = 'ProductivityCalculator'
-        PORT = '3307'
+        DOCKER_IMAGE = 'urszulach/python-app'
+        DOCKER_REGISTRY = 'docker.io'
+        K8S_DEPLOYMENT = 'productivity-calculator-deployment'
+        K8S_NAMESPACE = 'default'
     }
 
     stages {
@@ -17,30 +19,64 @@ pipeline {
             }
         }
 
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    sudo apt-get update
+                    sudo apt-get install -y python3 python3-venv python3-pip mysql-server
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install --upgrade pip
+                    pip install -r requirements.txt mysql-connector-python
+                '''
+            }
+        }
+
+        stage('Build Application') {
+            steps {
+                // Assuming there's a build command (e.g., for a Python application)
+                sh '''
+                    . venv/bin/activate
+                    python setup.py bdist_wheel
+                '''
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
-                script {
-                    def sanitizedBuildId = env.BUILD_ID.replaceAll('[^a-zA-Z0-9_.-]', '_')
-                    docker.build("python-app:${sanitizedBuildId}")
+                sh '''
+                    docker build -t ${DOCKER_IMAGE} .
+                '''
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                    sh '''
+                        echo "$DOCKER_PASSWORD" | docker login ${DOCKER_REGISTRY} -u "$DOCKER_USERNAME" --password-stdin
+                        docker push ${DOCKER_IMAGE}
+                    '''
                 }
             }
         }
 
-        stage('Run Tests in Docker') {
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh '''
+                    kubectl set image deployment/${K8S_DEPLOYMENT} ${K8S_DEPLOYMENT}=${DOCKER_IMAGE} --namespace=${K8S_NAMESPACE}
+                    kubectl rollout status deployment/${K8S_DEPLOYMENT} --namespace=${K8S_NAMESPACE}
+                '''
+            }
+        }
+
+        stage('Monitor Logs') {
             steps {
                 script {
-                    def sanitizedBuildId = env.BUILD_ID.replaceAll('[^a-zA-Z0-9_.-]', '_')
-                    docker.image("python-app:${sanitizedBuildId}").inside {
-                        // Execute shell commands
-                        sh '''
-                            if [ ! -d /venv ]; then
-                                python -m venv /venv
-                            fi
-                            . /venv/bin/activate
-                            pip install -r requirements.txt
-                            python -m unittest discover -s tests -p "*.py"
-                        '''
-                    }
+                    // Example: using kubectl logs to monitor the application logs
+                    sh '''
+                        kubectl logs -f deployment/${K8S_DEPLOYMENT} --namespace=${K8S_NAMESPACE}
+                    '''
                 }
             }
         }
@@ -55,6 +91,7 @@ pipeline {
         }
         failure {
             echo 'Build failed!'
+            // You can add additional logging or notifications here
         }
     }
 }
