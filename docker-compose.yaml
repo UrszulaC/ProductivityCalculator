@@ -1,12 +1,19 @@
-version: '3.8'
+version: '3'
 services:
-  mysql:
-    image: mysql:latest
-    environment:
-      MYSQL_ROOT_PASSWORD: Gordito10?
-    ports:
-      - "3307:3306"
-  python-app:
+  app:
     build: .
     depends_on:
-      - mysql
+      - db
+    environment:
+      HOST: db
+      USER: root
+      PASSWORD: gordito
+      DATABASE: ProductivityCalculator
+      PORT: 3307
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: gordito
+      MYSQL_DATABASE: ProductivityCalculator
+    ports:
+      - "3307:3306"
