@@ -5,108 +5,59 @@ pipeline {
         pollSCM('H/5 * * * *') // Polls the SCM every 5 minutes
     }
 
-    environment {
-        DOCKER_IMAGE = 'urszulach/python-app'
-        DOCKER_REGISTRY = 'docker.io'
-        K8S_DEPLOYMENT = 'productivity-calculator-deployment'
-        K8S_NAMESPACE = 'default'
-    }
-
     stages {
         stage('Checkout SCM') {
             steps {
-                script {
-                    dir('/var/lib/jenkins/workspace/ProductivityCalculator') {
-                        checkout scm
-                    }
-                }
+                checkout scm
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                script {
-                    dir('/var/lib/jenkins/workspace/ProductivityCalculator') {
-                        sh '''
-                            sudo apt-get update
-                            sudo apt-get install -y python3 python3-venv python3-pip mysql-server python3-full
-                            python3 -m venv venv  # No sudo here
-                            chown -R jenkins:jenkins venv  # Ensure Jenkins owns the venv
-                        '''
-                    }
-                    // Set the path to the virtual environment
-                    withEnv(["PATH+VENV=${env.WORKSPACE}/venv/bin"]) {
-                        sh '''
-                            # Use the pip in the virtual environment to install packages
-                            ./venv/bin/pip install --upgrade pip
-                            ./venv/bin/pip install --no-warn-script-location -r requirements.txt mysql-connector-python
-                        '''
-                    }
-                }
+                sh '''
+                    sudo apt-get update
+                    sudo apt-get install -y python3 python3-venv python3-pip mysql-server
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install --upgrade pip
+                    pip install -r requirements.txt mysql-connector-python
+                '''
             }
         }
 
-        stage('Build Application') {
+        stage('Start MySQL Service') {
             steps {
-                script {
-                    dir('/var/lib/jenkins/workspace/ProductivityCalculator') {
-                        withEnv(["PATH+VENV=${env.WORKSPACE}/venv/bin"]) {
-                            sh '''
-                                python setup.py bdist_wheel
-                            '''
-                        }
-                    }
-                }
+                sh '''
+                    sudo service mysql start
+                '''
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Clone Repository') {
             steps {
-                script {
-                    dir('/var/lib/jenkins/workspace/ProductivityCalculator') {
-                        sh '''
-                            docker build -t ${DOCKER_IMAGE} .
-                        '''
-                    }
-                }
+                git url: 'git@github.com:UrszulaC/ProductivityCalculator.git',
+                    branch: 'main',
+                    credentialsId: 'NewSSH'
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Load Config') {
             steps {
                 script {
-                    dir('/var/lib/jenkins/workspace/ProductivityCalculator') {
-                        withCredentials([usernamePassword(credentialsId: 'docker-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                            sh '''
-                                echo "$DOCKER_PASSWORD" | docker login ${DOCKER_REGISTRY} -u "$DOCKER_USERNAME" --password-stdin
-                                docker push ${DOCKER_IMAGE}
-                            '''
-                        }
-                    }
-                }
-            }
-        }
+                    def configVars = sh(
+                        script: '''
+                            . venv/bin/activate
+                            python3 -c "
+import config
+print(f'HOST={config.HOST}\\nUSER={config.USER}\\nPASSWORD={config.PASSWORD}\\nDATABASE={config.DATABASE}')
+                            "
+                        ''',
+                        returnStdout: true
+                    ).trim().split('\n')
 
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    dir('/var/lib/jenkins/workspace/ProductivityCalculator') {
-                        sh '''
-                            kubectl set image deployment/${K8S_DEPLOYMENT} ${K8S_DEPLOYMENT}=${DOCKER_IMAGE} --namespace=${K8S_NAMESPACE}
-                            kubectl rollout status deployment/${K8S_DEPLOYMENT} --namespace=${K8S_NAMESPACE}
-                        '''
-                    }
-                }
-            }
-        }
-
-        stage('Monitor Logs') {
-            steps {
-                script {
-                    dir('/var/lib/jenkins/workspace/ProductivityCalculator') {
-                        sh '''
-                            kubectl logs -f deployment/${K8S_DEPLOYMENT} --namespace=${K8S_NAMESPACE}
-                        '''
+                    for (configVar in configVars) {
+                        def (key, value) = configVar.split('=')
+                        env."${key}" = value
                     }
                 }
             }
@@ -115,7 +66,7 @@ pipeline {
 
     post {
         always {
-            cleanWs() // Clean workspace after every build
+            cleanWs()
         }
         success {
             echo 'Build succeeded!'
