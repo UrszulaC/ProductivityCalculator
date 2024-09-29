@@ -52,19 +52,19 @@ pipeline {
         }
 
     
+        stages {
         stage('Deploy to Kubernetes') {
             steps {
-                withCredentials([string(credentialsId: 'kubeconfig-credentials', variable: 'KUBECONFIG_CONTENT')]) {
-                    // Create a temporary kubeconfig file
+                withCredentials([file(credentialsId: 'kubeconfig-credentials', variable: 'KUBECONFIG_FILE')]) {
                     sh '''
-                        echo "$KUBECONFIG_CONTENT" > /tmp/kubeconfig
-                        export KUBECONFIG=/tmp/kubeconfig
+                        export KUBECONFIG=$KUBECONFIG_FILE
                         kubectl set image deployment/${K8S_DEPLOYMENT} ${K8S_DEPLOYMENT}=${DOCKER_IMAGE} --namespace=${K8S_NAMESPACE}
                         kubectl rollout status deployment/${K8S_DEPLOYMENT} --namespace=${K8S_NAMESPACE}
                     '''
                 }
             }
         }
+    }
     
 
         stage('Monitor Logs') {
