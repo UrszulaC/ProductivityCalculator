@@ -32,6 +32,15 @@ pipeline {
             }
         }
 
+        stage('Build Artifact') {
+            steps {
+                sh '''
+                python setup.py sdist bdist_wheel
+                ls dist/
+                '''
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 sh '''
