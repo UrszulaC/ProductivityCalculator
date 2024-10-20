@@ -60,8 +60,13 @@ pipeline {
             }
         }
 
-    
-        
+        stage('Rolling Update') {
+            steps {
+                script {
+                    sh 'kubectl rollout status deployment/my-app-deployment'
+                }
+            }
+        }        
         stage('Deploy to Kubernetes') {
             steps {
                 withCredentials([file(credentialsId: 'kubeconfig-credentials', variable: 'KUBECONFIG_FILE')]) {
