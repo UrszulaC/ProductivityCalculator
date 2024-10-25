@@ -63,7 +63,7 @@ pipeline {
         stage('Rolling Update') {
             steps {
                 script {
-                    sh 'kubectl rollout status deployment/my-app-deployment'
+                    sh 'kubectl rollout status deployment/productivity-calculator-deployment'
                 }
             }
         }        
