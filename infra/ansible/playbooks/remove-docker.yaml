@@ -1,0 +1,8 @@
+---
+- hosts: docker_hosts
+  become: yes
+  tasks:
+    - name: Remove Docker
+      apt:
+        name: docker-ce
+        state: absent

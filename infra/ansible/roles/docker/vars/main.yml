@@ -1,0 +1,3 @@
+---
+container_image: "urszulach/python-app:latest"
+container_name: "productivity-calculator"

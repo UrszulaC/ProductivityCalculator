@@ -30,7 +30,7 @@
 
     - name: Run a Docker container
       docker_container:
-        name: my_container
-        image: nginx:latest
+        name: "{{ container_name }}"
+        image: "{{ container_image }}"
         state: started
         restart_policy: always
