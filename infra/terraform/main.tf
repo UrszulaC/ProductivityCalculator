@@ -1,16 +1,23 @@
 provider "aws" {
   region = "eu-west-2"
 }
+module "vpc" {
+  source            = "./modules/vpc"
+  cidr_block        = "10.0.0.0/16"
+  subnet_cidr_block = "10.0.1.0/24"
+  name              = "infra_vpc"
+}
+
 
 # VPC
-resource "aws_vpc" "infra_vpc" {
-  cidr_block = "10.0.0.0/16"
-  enable_dns_support = true
-  enable_dns_hostnames = true
-  tags = {
-    Name = "infra_vpc"
-  }
-}
+#resource "aws_vpc" "infra_vpc" {
+  #cidr_block = "10.0.0.0/16"
+  #enable_dns_support = true
+  #enable_dns_hostnames = true
+  #tags = {
+    #Name = "infra_vpc"
+  #}
+#}
 
 # Internet Gateway
 resource "aws_internet_gateway" "infra_igw" {
