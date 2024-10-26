@@ -1,5 +1,5 @@
 import mysql.connector
-from config import *
+from app.config import *
 
 def create_table_projects(connection):
     try:

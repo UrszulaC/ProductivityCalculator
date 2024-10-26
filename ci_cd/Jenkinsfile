@@ -10,6 +10,7 @@ pipeline {
         DOCKER_REGISTRY = 'docker.io'
         K8S_DEPLOYMENT = 'productivity-calculator-deployment'
         K8S_NAMESPACE = 'default'
+        AWS_REGION = 'eu-west-2' // For Terraform
     }
 
     stages {
@@ -18,6 +19,37 @@ pipeline {
                 checkout scm
             }
         }
+
+        // Terraform Stages Begin
+        stage('Terraform Init') {
+            steps {
+                dir('infra') {
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                dir('infra') {
+                    sh 'terraform plan -var-file="../terraform/dev.tfvars" -out="../tfplan/dev.tfplan"'
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                script {
+                    def userApproval = input message: 'Apply the Terraform changes?', ok: 'Apply'
+                    if (userApproval) {
+                        dir('infra') {
+                            sh 'terraform apply "../tfplan/dev.tfplan"'
+                        }
+                    }
+                }
+            }
+        }
+        // Terraform Stages End
 
         stage('Install Dependencies') {
             steps {
@@ -67,6 +99,7 @@ pipeline {
                 }
             }
         }        
+
         stage('Deploy to Kubernetes') {
             steps {
                 withCredentials([file(credentialsId: 'kubeconfig-credentials', variable: 'KUBECONFIG_FILE')]) {
@@ -78,8 +111,6 @@ pipeline {
                 }
             }
         }
-    
-    
 
         stage('Monitor Logs') {
             steps {

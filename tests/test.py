@@ -1,6 +1,6 @@
 import unittest
 import mysql.connector
-from app import *
+from app.app import *
 
 class TestProjectOperations(unittest.TestCase):
 
