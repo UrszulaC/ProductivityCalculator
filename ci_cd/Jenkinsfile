@@ -20,7 +20,7 @@ pipeline {
             }
         }
 
-        // Terraform Stages Begin
+        // Terraform Stages
         stage('Terraform Init') {
             steps {
                 dir('infra') {
@@ -49,7 +49,7 @@ pipeline {
                 }
             }
         }
-        // Terraform Stages End
+        
 
         stage('Install Dependencies') {
             steps {
