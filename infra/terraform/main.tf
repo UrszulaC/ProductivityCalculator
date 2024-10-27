@@ -10,10 +10,10 @@ module "vpc" {
 }
 
 module "security_group" {
-  source      = "./modules/security_group"
-  vpc_id      = module.vpc.vpc_id
+  source        = "./modules/security_group"
+  vpc_id       = module.vpc.vpc_id
   ingress_ports = [22, 9090]
-  name        = "allow_ssh"
+  name          = "allow_ssh"
 }
 
 module "ec2" {
@@ -23,8 +23,21 @@ module "ec2" {
   subnet_id        = module.vpc.public_subnet_id
   security_group_id = module.security_group.security_group_id
   key_name         = "Server1_key"
+
+  # Example: If you want to pass a secret value to the EC2 module (if supported)
+  # secret_value     = data.aws_secretsmanager_secret_version.my_secret_version.secret_string
 }
 
-output "instance_ip" {
-  value = module.ec2.instance_ip
-}
+# Retrieve secret from AWS Secrets Manager
+#data "aws_secretsmanager_secret" "my_secret" {
+#   name = "database_credentials"  
+# }
+
+# data "aws_secretsmanager_secret_version" "my_secret_version" {
+#   secret_id = data.aws_secretsmanager_secret.my_secret.id
+# }
+
+
+# output "instance_ip" {
+#   value = module.ec2.instance_ip
+# }
